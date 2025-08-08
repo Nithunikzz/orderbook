@@ -49,7 +49,7 @@ func AddPair(pair CurrencyPair) error {
 }
 
 func CreateOrder(o *Order) error {
-	o.Fee = 0.05 * o.Price * o.Quantity
+	//o.Fee = 0.05 * o.Price * o.Quantity
 
 	return DB.QueryRow(`INSERT INTO orders (user_id, pair, side, price, quantity, status,fee)
                         VALUES ($1, $2, $3, $4, $5, 'open',$6) RETURNING id, created_at`,
@@ -57,8 +57,11 @@ func CreateOrder(o *Order) error {
 }
 
 func UpdateOrder(o *Order) error {
-	_, err := DB.Exec(`UPDATE orders SET filled_quantity=$1, status=$2 WHERE id=$3`,
-		o.FilledQuantity, o.Status, o.ID)
+	_, err := DB.Exec(`
+		UPDATE orders 
+		SET filled_quantity=$1, status=$2, fee=$3 
+		WHERE id=$4`,
+		o.FilledQuantity, o.Status, o.Fee, o.ID)
 	return err
 }
 
