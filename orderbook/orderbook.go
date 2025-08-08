@@ -34,10 +34,14 @@ func MatchOrders(pair string) {
 
 			if buy.Price >= sell.Price && buy.RemainingQuantity() > 0 && sell.RemainingQuantity() > 0 {
 				matchedQty := min(buy.RemainingQuantity(), sell.RemainingQuantity())
+				matchedPrice := sell.Price
+				tradeAmount := matchedQty * matchedPrice
+				fee := 0.05 * tradeAmount
 
 				buy.FilledQuantity += matchedQty
+				buy.Fee += fee
 				sell.FilledQuantity += matchedQty
-
+				sell.Fee += fee
 				if buy.RemainingQuantity() == 0 {
 					buy.Status = "filled"
 				} else {
